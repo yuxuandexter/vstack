@@ -21,7 +21,7 @@ Map ownership, generation, in-flight accounting, abort, acknowledgment and relea
 | drift | Covered methods, all state writers and last aligned revision | Every change classified, including moved methods and new writers |
 | model checks | Source-derived model variants and historical calibration jobs | Expected property and mechanism; required reachability witnesses |
 | trace conformance | Pinned real traces, instrumentation and trace configs | Whole-trace completion assessed separately from safety; every mismatch triaged |
-| mutation regression | Mutant/trace pairs with predictions | Each designated regression gives its frozen expected verdict and first divergence; survivors remain explicit gaps |
+| mutation regression | Pairs of mutants and traces, with predictions | Each designated regression gives its frozen expected verdict and first divergence; survivors remain explicit gaps |
 
 The original runner accepts a source-tree selection and a required-fix option. In a project adaptation, record the exact local command in the skill. A known-bug baseline can match all expected results while still violating safety. Require the fixed-state contract before claiming a repair.
 
@@ -33,8 +33,8 @@ Run unchanged first. Classify each covered change as no effect, model drift, int
 
 In a source copy, remove the drain guard or disrupt lifetime accounting. Timestamp the expected result before running. Drift and source-derived model checks must expose the change; restore the source and recover the baseline. Record failed predictions too.
 
-Frozen trace/mutation jobs check their pinned model and traces. They can stay unchanged after a live source edit, so they cannot substitute for drift and source-derived checks. A missing abort path also needs a reachability witness: fewer unsafe behaviors can mean missing functionality.
+Frozen trace and mutation jobs check their pinned model and traces. They can stay unchanged after a live source edit, so they cannot substitute for drift and source-derived checks. A missing abort path also needs a reachability witness: fewer unsafe behaviors can mean missing functionality.
 
 ## Result boundary
 
-Report in sync, updated, bug or blocked, with model/code/trace hashes and bounds. A blocked run never advances the aligned revision. A design-model proof is separate from evidence that the current implementation follows that model.
+Report in sync, updated, bug or blocked, with model, code and trace hashes and bounds. A blocked run never advances the aligned revision. A design-model proof is separate from evidence that the current implementation follows that model.

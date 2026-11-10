@@ -13,25 +13,25 @@ Red team reads reviewed artifacts and mutates only its own copies. It reports fi
 
 ## 1. Input
 
-The complete S4 (calibrate and align traces) bundle and its scope statement, with hashes.
+The complete S4 bundle and its scope statement, with hashes.
 
 ## 2. Procedure
 
-1. Assign independent attack directions when delegation is available and authorized: model fidelity (missing/extra behaviors), property and gate strength (bad models, weak specs, forged output), scale extrapolation (one larger configuration).
+1. When delegation is available and authorized, assign independent attacks: test fidelity with missing or extra behaviors; test properties and gates with bad models, weak specs and forged output; test scale with one larger configuration.
 2. For each finding record exact command, actual output, intended output, source anchors and confidence. Mark findings as execution-supported when a run supports them, or as reproduced on real code. Items without run evidence remain leads.
 3. The coordinator reruns findings and merges common causes. Keep every independently confirmed failure, not just one reviewer's list.
 4. Turn a successful bypass into a mechanical check where feasible and record its ablation. Rerun the corresponding attack after gate changes.
 
 ## 3. Exit checks
 
-- Every execution-supported or reproduced finding is resolved or has a rollback ticket; coordinator review is manual.
+- Resolve each execution-supported or reproduced finding, or file a rollback ticket. The coordinator reviews these manually.
 - Update the attack-to-enforcer table with evidence and remaining gaps.
-- Gate changes have their attack regressions. The source has an ASSUMES selftest; a complete generic attack suite is not bundled.
+- Run the corresponding attack regressions for every gate change. The source has an ASSUMES selftest; a complete generic attack suite is not bundled.
 - S5 is mandatory; a model author's success report is insufficient.
 
 ## 4. Rollback
 
-Fidelity → S3 (build an anchored model); weak ideal → S2 (freeze specifications and contracts) with property-owner approval; weak verdict/gate → coordinator-owned gate repair. Never modify the reviewed originals from the red-team role. Use [a rollback ticket](../../templates/rollback.md).
+Return fidelity defects to S3 and a weak ideal to S2 with property-owner approval. Assign weak verdicts or gates to the coordinator for repair. Never modify the reviewed originals from the red-team role. Use [a rollback ticket](../../templates/rollback.md).
 
 ## Concrete Examples
 

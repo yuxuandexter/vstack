@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # LEGACY CLASSIFIER ONLY: source this file and call tlc_verdict LOG RC.
 # It prints a label; its shell exit status is NOT the verification verdict.
-# No zero-state/coverage check; not a complete Fail-closed acceptance acceptance gate. See docs/gates.md.
+# No empty-state or coverage check; not a complete fail-closed acceptance gate. See docs/gates.md.
 G=/usr/bin/grep
 tlc_verdict() {  # tlc_verdict LOG RC -> PASS | VIOLATION:<name> | VIOLATION:temporal | VIOLATION:deadlock | TIMEOUT | ERROR:...
   local log=$1 rc=$2 x

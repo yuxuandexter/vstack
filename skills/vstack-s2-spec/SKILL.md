@@ -13,25 +13,25 @@ The coordinator writes top-level promises and pins; the property owner approves 
 
 ## 1. Input
 
-The approved S1 (split obligations and select methods) design and obligation matrix.
+The approved S1 design and obligation matrix.
 
 ## 2. Procedure
 
 1. Write a short, reviewable statement of observable consequences and explicit non-goals. Use [contract discovery](../../docs/contracts.md) and [the card template](../../templates/contract-card.md).
-2. Require top-level decomposition plus historical bugs or consumer requirements; ledger/protocol families complete one-step induction. Scan all seven consumer-precondition categories.
-3. Calibrate negative examples, legal edge behavior, witnesses and minimum scale before freezing. S4 (calibrate and align traces) repeats calibration on the complete model.
+2. Require top-level decomposition plus historical bugs or consumer requirements; complete one-step induction for ledger and protocol families. Scan all seven consumer-precondition categories.
+3. Calibrate negative examples, legal edge behavior, witnesses and minimum scale before freezing. S4 repeats calibration on the complete model.
 4. Expose environment assumptions and ambiguous semantics as sourced switches. State which interpretation each claim requires.
-5. The coordinator pins the approved text, ideal model and configurations deciding what is checked. Before deductive proof, also freeze the complete inductive invariant and root statement, including explicit parameter ranges and configuration premises. Check content hashes before every counted run.
+5. Have the coordinator pin the approved text, ideal model and check configurations. Before deductive proof, also freeze the complete inductive invariant and root statement, including explicit parameter ranges and configuration premises. Check content hashes before every counted run.
 
 ## 3. Exit checks
 
-- Approval, provenance, consumer scan and calibration records are complete: partly manual.
-- `scripts/check_spec_pins.sh ROOT PINS` succeeds: mechanical byte comparison.
-- The frozen ideal rejects its approved bad-implementation suite while controls pass: project-specific execution, not automatic approval.
+- Check approval, provenance, consumer scans and calibration records for completeness. This is partly manual.
+- Require `scripts/check_spec_pins.sh ROOT PINS` to succeed; it compares pinned bytes mechanically.
+- Run the approved bad-implementation suite against the frozen ideal: bad cases must fail and controls must pass. These project-specific runs do not grant approval.
 
 ## 4. Rollback
 
-Use a rollback ticket for an overly strong property or missing assumption. Stage the change, compare full regressions, obtain a new property-owner decision, then let the coordinator independently rerun and re-pin. Changing the inductive invariant also requires rechecking Init and every affected preservation cell in the same proof tree, followed by fresh acceptance; old proof results do not carry over. Use [a rollback ticket](../../templates/rollback.md).
+Report an overly strong property or missing assumption with [a rollback ticket](../../templates/rollback.md). Stage the change, compare full regressions, obtain a new property-owner decision, then let the coordinator independently rerun and re-pin. An invariant change requires new Init and affected preservation checks in the same tree, then fresh acceptance. Old proof results do not carry over.
 
 ## Concrete Examples
 

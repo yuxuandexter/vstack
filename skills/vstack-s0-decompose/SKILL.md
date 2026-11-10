@@ -18,16 +18,16 @@ A fixed source revision and existing anchors for deduplication.
 ## 2. Procedure
 
 1. Build a control map of mutable state, owners and **all** writers. Search all assignments before saying a field has one writer.
-2. Build a data/computation map of consumers and their unchecked input preconditions. Build a boundary map of producer, consumer, execution context, overwrite time and synchronization. Classify every in-scope file.
+2. Map data and computation consumers and their unchecked preconditions. At each boundary, map the producer, consumer, execution context, overwrite time and synchronization. Classify every in-scope file.
 3. Record facts with `path:line@commit` and short source excerpts. Keep unsupported inferences explicitly unverified.
 4. Search the target and related systems by component. Record every examined candidate, rejection reason and search coverage. Confirm buggy triggers and fixed behavior on the stated revisions; a closed issue is not evidence that a fix merged.
-5. Test critical physical/synchronization assumptions on the real system before treating them as axioms, using authorized resources.
+5. Test critical physical and synchronization assumptions on the real system before treating them as axioms, using authorized resources.
 
 ## 3. Exit checks
 
-- Evidence schema errors must be zero and the checked-item count positive. The source KB checker is repository-specific and is not bundled.
-- Verifier plus coordinator review original source; review marks must bind to content. Reading remains manual.
-- File classification is complete; unsupported claims are labeled; upstream identifiers are deduplicated. Generic automation for these checks is absent.
+- Require zero evidence schema errors and a positive checked-item count. The source KB checker is repository-specific and is not bundled.
+- Have the verifier and coordinator review original source and bind review marks to its content. This review is manual.
+- Classify every file, label unsupported claims and deduplicate upstream identifiers. These checks have no generic automation.
 - Keep disproved anchors. Rename an unsupported historical `Bug*` switch to `Mut*`; do not count it as historical calibration.
 
 ## 4. Rollback

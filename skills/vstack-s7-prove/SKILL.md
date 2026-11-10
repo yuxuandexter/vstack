@@ -9,35 +9,35 @@ Read [Layer 0: shared operating rules](../../docs/layer-0.md), this stage and th
 
 ## Role and write scope
 
-Proof workers own assigned proof modules and auxiliary lemmas in one shared module tree. The coordinator owns theorem statements, invariant pins and accepted tool/settings manifests.
+Proof workers own assigned proof modules and auxiliary lemmas in one shared module tree. The coordinator owns theorem statements, invariant pins and accepted tool and settings manifests.
 
 ## 1. Input
 
-The calibrated model selected in S1 (split obligations and select methods), after S4 (calibrate and align traces)/S5 (attack model fidelity and gate strength), with no unclassified model/code mismatch. Complete [invariant discovery](../../docs/method-selection.md) first; pin the specification, full inductive invariant, parameter ranges and proved configuration before deductive proof starts.
+The calibrated model selected in S1, after S4 and S5, with no unclassified mismatch between model and code. Complete [invariant discovery](../../docs/method-selection.md) first; pin the specification, full inductive invariant, parameter ranges and proved configuration before deductive proof starts.
 
 ## 2. Procedure
 
-1. Import the pinned model directly. The root's conclusion is exactly its `Spec ⇒ □Safety`; parameter ranges and configuration appear as explicit root `ASSUME … PROVE` premises. Add no module-level `ASSUME` or `AXIOM`. Keep necessary auxiliary definitions in the proof layer, with machine-checked bridges to pinned definitions; never substitute a model rewritten for easier proofs.
-2. Use one module tree and shared definitions from the start. Assign action × conjunct cells within that tree; do not prove independent model copies and rename/merge them at the end. Include all strengthening conjuncts in the cell inventory.
-3. Prove projection lemmas `IndInv ⇒ Conjunct`; unfold the full invariant only at this interface. Each preservation cell receives just the old-state conjuncts it needs, including necessary type/domain facts.
-4. Expand an action once to establish effect equations and frame facts (unchanged fields). Subsequent cells use those facts. Prove shared effects as family lemmas while retaining every action-to-family bridge; keep large local definitions hidden after proving their interfaces.
-5. Split remaining goals by quantified object, updated versus unchanged object, or old versus new set member. Close Init, every preservation cell, stuttering and `IndInv ⇒ Safety`; the root only composes proved results. Never cite bounded model-checking success as a proof premise.
+1. Import the pinned model directly. The root concludes exactly its `Spec ⇒ □Safety`, with parameter ranges and configuration in explicit `ASSUME … PROVE` premises. Add no module-level `ASSUME` or `AXIOM`. Keep auxiliary definitions in the proof layer and machine-check their bridges to pinned definitions. Never rewrite the model to ease proof.
+2. Use one module tree and shared definitions from the start. Assign preservation cells for every invariant conjunct under every action, including all strengthening. Do not prove independent model copies and merge or rename them later.
+3. Prove projection lemmas `IndInv ⇒ Conjunct`; unfold the full invariant only at this interface. Each preservation cell receives just the old-state conjuncts it needs, including necessary type and domain facts.
+4. Expand each action once to prove effect equations and frame facts for unchanged fields. Reuse those facts in subsequent cells. Prove shared effects as family lemmas, retain every action-to-family bridge, and hide large local definitions after proving their interfaces.
+5. Split remaining goals by quantified object, updated or unchanged object, or old or new set member. Close Init, every preservation cell, stuttering and `IndInv ⇒ Safety`. Compose only proved results at the root; never use bounded model-checking success as a proof premise.
 6. Control facts and definitions separately: `BY ONLY` retains already usable definitions. Pair it with `HIDE DEF` and keep `USE DEF` inside the smallest subproof scope. A renamed large expression still expands unless hidden.
-7. Diagnose single-threaded proof-manager preprocessing (`normalize_expand`) separately from backend search (`--threads` only parallelizes backend solvers) and whole-module wall-clock interruption. Reduce context expansion for internal slowdowns; for large modules, parallelize preprocessing across OS processes by slicing along top-level theorem boundaries with `tlapm --toolbox <start_line> <end_line> --threads 1` so source SHA and module dependencies remain unchanged. When a single obligation fails, isolate and debug its line range with `--toolbox` before rerunning the module. If a module hits its wall-clock limit with zero failed obligations, rerun with range slicing or a doubled wall-clock budget rather than editing the proof.
-8. Enforce at most one in-flight check per module across the cluster, schedule downstream closure refreshes along true `EXTENDS` dependencies rather than coarse batch barriers, and retain fingerprint caches across reruns to skip redundant frontend expansion. Recheck the affected dependency closure through the root after every integration; an invariant change invalidates affected evidence and requires re-pinning and full re-verification.
+7. Follow the [proof-run protocol](../../docs/run-review.md#proof-runs): keep persistent fingerprints, diagnose timeouts in the full module context with a capped step budget, and parallelize large modules at top-level theorem boundaries. Use `tlapm --toolbox <start_line> <end_line> --threads 1` for each slice; start with one or two backend threads per slice. Accept slices only with the complete certificate defined in the proof gates. For lasting reductions in frontend work, split large modules and narrow `DEF` expansion.
+8. Keep at most one active check run per module, across all snapshots and execution hosts. That run may comprise several parallel slice processes; do not run a second whole-module or sliced copy alongside it. Overlap rounds for different modules. Refresh each downstream module unchanged once its own changed dependencies have final passing sources; do not wait for unrelated modules. Preserve exported definitions and theorem statements when repairing proof bodies. Route interface or invariant changes through review and new acceptance; invariant changes also require new pins.
 
-This structure follows the [TLAPS guide](https://lamport.azurewebsites.net/tla/tla2-guide.pdf), [practical hints](https://proofs.tlapl.us/doc/web/content/Documentation/Tutorial/Practical_hints.html), [tactics](https://proofs.tlapl.us/doc/web/content/Documentation/Tutorial/Tactics.html), [MongoRaftReconfig proof organization](https://arxiv.org/html/2109.11987v2) and [TLAPS-Bench theorem-range slicing](https://arxiv.org/abs/2611.02849). It is not a measured performance guarantee.
+For proof structure and tool mechanics, consult the [TLAPS guide](https://lamport.azurewebsites.net/tla/tla2-guide.pdf), [practical hints](https://proofs.tlapl.us/doc/web/content/Documentation/Tutorial/Practical_hints.html), [tactics](https://proofs.tlapl.us/doc/web/content/Documentation/Tutorial/Tactics.html), [MongoRaftReconfig proof organization](https://arxiv.org/html/2109.11987v2) and [TLAPS-Bench theorem-range slicing](https://arxiv.org/abs/2611.02849). These references provide no measured performance guarantee for this workflow.
 
 ## 3. Exit checks
 
-- All [proof acceptance gates](../../docs/gates.md#deductive-proof-acceptance) pass on the frozen tree, including bridges and strengthening. Cached leaves or a green root alone are insufficient.
+- Pass all [proof acceptance gates](../../docs/gates.md#deductive-proof-acceptance) on the assembled tree, including bridges and strengthening. Retain one complete strict result per module, from a whole-module run or an independently checked slice certificate. Bind each result to its source, full import closure and toolchain; cached leaves or a green root alone are insufficient.
 - Report the root statement and its premises verbatim. Finite-domain induction retains its bounds; an arbitrary-scale claim requires the corresponding quantification.
 - The proved object is the design model. Describe implementation evidence as validation against that model, with its alignment limits.
-- Timeout, unknown, omitted, interrupted or inconclusive work is incomplete. No generic proof-integrity/closure checker is bundled.
+- Treat final unproved, timeout, unknown, omitted, interrupted or inconclusive work as incomplete. Record runtime, memory and repeat runs without making them proof gates. No generic proof-integrity/closure checker is bundled.
 
 ## 4. Rollback
 
-A reachable induction counterexample → S6 (find and repair bugs). A missing premise or needed invariant change → S2 (freeze specifications and contracts) for review and new pins; do not inherit the old acceptance result. If strengthening fails, revisit S3 (build an anchored model). Use [a rollback ticket](../../templates/rollback.md).
+Send a reachable induction counterexample to S6. Return a missing premise or invariant change to S2 for review and new pins; do not inherit the old acceptance result. If strengthening fails, revisit S3. Use [a rollback ticket](../../templates/rollback.md).
 
 ## Concrete Examples
 

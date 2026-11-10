@@ -16,4 +16,4 @@ Read [Layer 0: shared operating rules](../../../docs/layer-0.md). Use the follow
 
 If deductive proof is not justified, record the S7 selection and bounded guarantee; do not manufacture a proof requirement. S6 may only be skipped under the new-code/deductive-proof rule.
 
-On an upstream defect, send a rollback ticket to that stage; never edit its frozen artifact from a downstream role. The coordinator reruns accepted outputs independently.
+On an upstream defect, send a rollback ticket to that stage; never edit its frozen artifact from a downstream role. The coordinator independently reviews proof certificates under the proof gates and reruns model, trace and mutation checks.

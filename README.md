@@ -53,6 +53,8 @@ When a model checker reports a counterexample, naive coding agents often reward-
 4. **`Verification`:** Run `TLC` breadth-first search for counterexamples, then use `Apalache`, `Z3`, and `TLAPS` to prove that the fixed state machine and memory offsets hold for arbitrary numbers of requests and pages.
 5. **`Continuous Checking`:** Re-run the specification suite on new pull requests on CPUs, and mirror the proven preconditions as lightweight runtime checks.
 
+**Case study:** [`pLLM`](https://github.com/yuxuandexter/pllm) (Provable LLM) is a disaggregated Prefill-Decode serving engine whose KV page state machine was built and verified with `vstack`.
+
 ---
 
 *MIT License ([LICENSE](LICENSE)). Plugin layout and agent orchestration patterns draw inspiration from [Lauren Tan](https://x.com/poteto/status/2117437607940681849)'s [`pstack`](https://github.com/cursor/plugins/tree/main/pstack); code-to-spec validation and proof gates build on lessons from [`Specula`](https://arxiv.org/abs/2607.25333), [`SysMoBench`](https://arxiv.org/abs/2509.23130), and [`TLAPS-Bench`](https://arxiv.org/abs/2611.02849).*

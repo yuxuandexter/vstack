@@ -17,4 +17,4 @@ Use this S6 (find and repair bugs) omission only when the property concerns newl
 
 Before proof work, freeze the specification and complete inductive invariant. Follow the proof stage's single-tree workflow: projections → action effects/frame facts → supported preservation cells → shared family lemmas → root composition. Recheck integrations continuously and require all [proof acceptance gates](../../../docs/gates.md#deductive-proof-acceptance) before packaging a machine-proof claim.
 
-On an upstream defect, send a rollback ticket to that stage; never edit its frozen artifact from a downstream role. The coordinator reruns accepted outputs independently.
+On an upstream defect, send a rollback ticket to that stage; never edit its frozen artifact from a downstream role. The coordinator independently reviews proof certificates under the proof gates and reruns model, trace and mutation checks.
