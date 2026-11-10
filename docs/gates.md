@@ -81,15 +81,17 @@ Accept native fingerprint hits from strict runs under the same frozen toolchain 
 
 ### Slice certificates
 
-For parallel theorem ranges using `tlapm --toolbox <start> <end>`, require all five conditions mechanically:
+Use parallel slices when a large module is limited by serial frontend processing and multiple cores are available. Keep small modules in whole-module runs. `--threads` parallelizes backends; fingerprint hits save backend work but leave serial frontend work. Do not expect slicing to reduce total CPU work; budget for higher aggregate memory during concurrent checks.
 
-1. Cut at top-level theorem or lemma boundaries in the complete module context. The ranges must cover every proof without gaps or duplicate obligations.
-2. Match the sum of slice `obligationsnumber` counts to the whole-module native count under the same source, closure and toolchain. Reconcile obligation IDs and source locations to detect duplicates and omissions; equal totals alone are insufficient.
-3. Require strict mode without `--lax`, `rc = 0` for every slice, all final obligations `proved` or `trivial`, zero final failed, unknown, timeout or missing obligations, and zero native `OMITTED`.
-4. Match every slice's module source, full import closure and toolchain hashes. Record each slice's actual settings and cache provenance.
-5. Retain slice paths, ranges, counts, hashes and raw logs in the module certificate. Have an independent reviewer recompute conditions 1–4 from source and raw logs, independently of the author's certificate builder.
+1. Freeze the module, full import closure and toolchain. Run `tlapm -N --toolbox 0 0 Module.tla` with the same import paths and proof settings to obtain the complete native obligation inventory. Use this inventory as the sole coverage reference; retain its raw log and `obligationsnumber` count. The `-N` run generates obligations without proving them.
+2. Choose inclusive line ranges only between top-level theorems or lemmas, or between first-level `<1>` steps. Keep each selected step's subproof intact; never cut inside it. Include every split theorem's QED obligations in a slice. Read the complete unchanged module in every process; do not extract proof fragments or replace unselected proofs with assumptions.
+3. Run each slice with `TLAPM_CACHE_DIR="$SLICE_CACHE" tlapm --strict --nofp --toolbox START END Module.tla`, replacing `START` and `END` with its line bounds. Assign each process a separate, new, empty cache directory; `--nofp` still writes fingerprints. Keep source, closure, libraries, toolchain and proof settings identical to the inventory run, apart from backend suppression and line selection. Start with one or two backend threads per slice and limit concurrency by aggregate memory.
+4. Make reconciliation a hard acceptance gate. Require the multiset of source locations of all final `proved` or `trivial` obligations across slices to equal the native inventory's location multiset exactly, preserving multiplicities and full line/column spans. Count each obligation's final event once; do not compare only totals or assume process-local obligation IDs are globally unique. Require matching native counts, `rc = 0` for every slice, strict mode without `--lax`, zero native `OMITTED`, and zero final failed, unknown, timeout or missing obligations. Reject any missing, extra or duplicated coverage; an interrupted or incomplete run cannot pass.
+5. Retain slice ranges, counts, source and closure hashes, toolchain identity, commands, cache provenance and complete raw logs in the certificate. Have an independent reviewer use a separate script to reconstruct the inventory and final slice results from raw logs and recheck all conditions; do not trust the certificate builder's summary. Supply this script in the project; no generic slice checker is bundled here.
 
-A complete slice certificate satisfies the module check; no additional whole-module proof run is required. A count-only run supplies a denominator, never a proof. A diagnostic line check without complete coverage remains partial.
+Treat a complete certificate as equivalent to a whole-module strict check because it checks exactly the same obligation multiset from the same source, dependency closure, toolchain and full proof context. Require no additional whole-module proof run; a count-only run or an unreconciled line check remains insufficient.
+
+See the [pLLM proof implementation and recorded results](https://github.com/yuxuandexter/pllm/tree/main/verification/pd-disagg/proofs) for a project example.
 
 Only after all gates pass, report “the design model's `Spec ⇒ □Safety` is machine proved under the listed premises.” Describe implementation evidence as validation against the model, not as a proof of the code. Keep incomplete gates and bounded evidence explicit.
 

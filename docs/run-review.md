@@ -33,7 +33,7 @@ Use the [deductive proof gates](gates.md#deductive-proof-acceptance) for accepta
 
 ### Schedule complete checks
 
-The frontend processes obligations largely serially; `--threads` parallelizes backends. Split large checks by top-level theorem ranges into separate processes, with one or two backend threads each. Keep the complete module context and use separate persistent cache directories per slice to avoid concurrent writers. Assemble acceptance only under the slice-certificate rules.
+Keep small modules in whole-module runs. For large checks limited by serial frontend work, follow the [slice-certificate procedure](gates.md#slice-certificates): cut only between top-level theorems or first-level steps, retain the complete module context, and use separate new caches with `--strict --nofp` for certified slices. Start with one or two backend threads per slice and limit concurrency by aggregate memory.
 
 Count a whole-module invocation or its coordinated slice processes as one check run. Keep at most one active run per module across snapshots and hosts. Retire a superseded run and confirm its recorded process groups have exited before starting its replacement. Overlap rounds on different modules so new snapshots do not queue behind unrelated long tails. Refresh each downstream module as soon as its own changed upstream dependencies have final passing sources.
 
