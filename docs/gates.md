@@ -91,7 +91,7 @@ Use parallel slices when a large module is limited by serial frontend processing
 
 Treat a complete certificate as equivalent to a whole-module strict check because it checks exactly the same obligation multiset from the same source, dependency closure, toolchain and full proof context. Require no additional whole-module proof run; a count-only run or an unreconciled line check remains insufficient.
 
-See the [pLLM proof implementation and recorded results](https://github.com/yuxuandexter/pllm/tree/main/verification/pd-disagg/proofs) for a project example.
+See the [veriserve proof implementation and recorded results](https://github.com/yuxuandexter/veriserve/tree/main/verification/pd-disagg/proofs) for a project example.
 
 Only after all gates pass, report “the design model's `Spec ⇒ □Safety` is machine proved under the listed premises.” Describe implementation evidence as validation against the model, not as a proof of the code. Keep incomplete gates and bounded evidence explicit.
 
